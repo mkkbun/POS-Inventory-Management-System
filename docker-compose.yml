@@ -1,0 +1,67 @@
+# docker-compose.yml for Apex POS & Inventory Management System
+
+version: '3.8'
+
+services:
+  # PostgreSQL database for transactions, users and inventory schemas
+  postgres:
+    image: postgres:15-alpine
+    container_name: apex-pos-db
+    restart: always
+    environment:
+      POSTGRES_DB: apex_pos_db
+      POSTGRES_USER: apex_pos_admin
+      POSTGRES_PASSWORD: SecretPostgresSQL9988_Secure
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Redis for rapid query cached products datasets and API limits throttles
+  redis:
+    image: redis:7-alpine
+    container_name: apex-pos-cache
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  # Backend Fastify Rest API server
+  backend:
+    build:
+      context: .
+      dockerfile: backend.Dockerfile
+    container_name: apex-pos-backend
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://apex_pos_admin:SecretPostgresSQL9988_Secure@postgres:5432/apex_pos_db?schema=public
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=BespokeEnterpriseSecret9988A77_POS
+      - PORT=5000
+    depends_on:
+      - postgres
+      - redis
+
+  # Frontend React client interface
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend.Dockerfile
+    container_name: apex-pos-frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://backend:5000
+      - PORT=3000
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  redis_data:

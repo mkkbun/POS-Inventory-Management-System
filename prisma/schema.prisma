@@ -1,0 +1,259 @@
+// prisma/schema.prisma
+// Full-scale enterprise-grade PostgreSQL schema for robust database migrations
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  Admin
+  Manager
+  Cashier
+}
+
+enum PurchaseOrderStatus {
+  Pending
+  Ordered
+  Received
+  Cancelled
+}
+
+enum StockMovementType {
+  Adjustment_In
+  Adjustment_Out
+  Transfer_In
+  Transfer_Out
+  Sale
+  Refund
+  PO_Received
+}
+
+enum OrderStatus {
+  Completed
+  Refunded
+  OnHold
+}
+
+enum LoyaltyTxType {
+  Earned
+  Redeemed
+  Adjusted
+}
+
+model User {
+  id            String      @id @default(uuid())
+  email         String      @unique
+  name          String
+  passwordHash  String
+  role          Role        @default(Cashier)
+  branch        Branch      @relation(fields: [branchId], references: [id])
+  branchId      String
+  isDeactivated Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  auditLogs     AuditLog[]
+}
+
+model Branch {
+  id             String          @id @default(uuid())
+  name           String
+  code           String          @unique
+  address        String
+  phone          String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  users          User[]
+  inventoryItems InventoryItem[]
+  purchaseOrders PurchaseOrder[]
+  orders         Order[]
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[]
+}
+
+model Product {
+  id                String              @id @default(uuid())
+  sku               String              @unique
+  barcode           String              @unique
+  name              String
+  description       String?
+  category          Category            @relation(fields: [categoryId], references: [id])
+  categoryId        String
+  price             Decimal             @db.Decimal(10, 2)
+  costPrice         Decimal             @db.Decimal(10, 2)
+  lowStockThreshold Int                 @default(5)
+  imageUrl          String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  inventoryItems    InventoryItem[]
+  poItems           PurchaseOrderItem[]
+  orderItems        OrderItem[]
+}
+
+model Supplier {
+  id             String          @id @default(uuid())
+  name           String          @unique
+  contactName    String?
+  email          String          @unique
+  phone          String?
+  address        String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  purchaseOrders PurchaseOrder[]
+}
+
+model PurchaseOrder {
+  id         String              @id @default(uuid())
+  supplier   Supplier            @relation(fields: [supplierId], references: [id])
+  supplierId String
+  branch     Branch              @relation(fields: [branchId], references: [id])
+  branchId   String
+  poNumber   String              @unique
+  status     PurchaseOrderStatus @default(Pending)
+  items      PurchaseOrderItem[]
+  totalCost  Decimal             @db.Decimal(10, 2)
+  notes      String?
+  orderedAt  DateTime?
+  receivedAt DateTime?
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+}
+
+model PurchaseOrderItem {
+  id              String        @id @default(uuid())
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  purchaseOrderId String
+  product         Product       @relation(fields: [productId], references: [id])
+  productId       String
+  quantity        Int
+  unitCost        Decimal       @db.Decimal(10, 2)
+}
+
+model InventoryItem {
+  id             String          @id @default(uuid())
+  product        Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId      String
+  branch         Branch          @relation(fields: [branchId], references: [id])
+  branchId       String
+  stockQuantity  Int             @default(0)
+  updatedAt      DateTime        @updatedAt
+  stockMovements StockMovement[]
+
+  @@unique([productId, branchId])
+}
+
+model StockMovement {
+  id              String            @id @default(uuid())
+  inventoryItem   InventoryItem     @relation(fields: [inventoryItemId], references: [id], onDelete: Cascade)
+  inventoryItemId String
+  type            StockMovementType
+  quantity        Int               // Positive for adding, negative for removing
+  reason          String
+  userId          String
+  createdAt       DateTime          @default(now())
+}
+
+model Order {
+  id                    String        @id @default(uuid())
+  orderNumber           String        @unique
+  branch                Branch        @relation(fields: [branchId], references: [id])
+  branchId              String
+  cashierId             String
+  customer              Customer?     @relation(fields: [customerId], references: [id])
+  customerId            String?
+  totalBeforeTax        Decimal       @db.Decimal(10, 2)
+  taxAmount             Decimal       @db.Decimal(10, 2)
+  discountPercentage    Decimal       @default(0) @db.Decimal(5, 2)
+  discountAmount        Decimal       @default(0) @db.Decimal(10, 2)
+  totalAmount           Decimal       @db.Decimal(10, 2)
+  loyaltyPointsEarned   Int           @default(0)
+  loyaltyPointsRedeemed Int           @default(0)
+  paymentMethod         String        // Cash, Card, Split
+  cashReceived          Decimal?      @db.Decimal(10, 2)
+  changeGiven           Decimal?      @db.Decimal(10, 2)
+  status                OrderStatus   @default(Completed)
+  items                 OrderItem[]
+  refundDetails         Refund[]
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+}
+
+model OrderItem {
+  id             String  @id @default(uuid())
+  order          Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId        String
+  product        Product @relation(fields: [productId], references: [id])
+  productId      String
+  quantity       Int
+  priceAtSale    Decimal @db.Decimal(10, 2)
+  discountAmount Decimal @default(0) @db.Decimal(10, 2) // Per item discount value
+  subtotal       Decimal @db.Decimal(10, 2)
+}
+
+model Customer {
+  id                   String               @id @default(uuid())
+  name                 String
+  email                String               @unique
+  phone                String               @unique
+  address              String?
+  loyaltyPointsBalance Int                  @default(0)
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  orders               Order[]
+  loyaltyTransactions  LoyaltyTransaction[]
+}
+
+model LoyaltyTransaction {
+  id         String        @id @default(uuid())
+  customer   Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId String
+  orderId    String?
+  points     Int
+  type       LoyaltyTxType
+  createdAt  DateTime      @default(now())
+}
+
+model Refund {
+  id                String   @id @default(uuid())
+  order             Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId           String
+  reason            String
+  processedByUserId String
+  refundedAmount    Decimal  @db.Decimal(10, 2)
+  createdAt         DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  action    String
+  details   String
+  ipAddress String?
+  createdAt DateTime @default(now())
+}
+
+model Setting {
+  id                   String   @id @default("setting-1")
+  businessName         String
+  businessAddress      String
+  businessPhone        String
+  logoUrl              String?
+  currency             String   @default("£")
+  taxRatePercentage    Decimal  @default(20) @db.Decimal(5, 2)
+  receiptFooterMessage String
+  lowStockAlertEmail   String
+  enableEmailAlerts    Boolean  @default(true)
+  updatedAt            DateTime @updatedAt
+}

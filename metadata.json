@@ -1,0 +1,6 @@
+{
+  "name": "Apex POS & Inventory Management System",
+  "description": "Full-stack retail operations platform — POS checkout, multi-branch inventory, CRM, purchase orders, analytics & real-time alerts. Live demo: https://envault-sandbox-507307610839.europe-west2.run.app",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
