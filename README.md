@@ -4,8 +4,8 @@
 
 ### Full-stack retail operations platform — POS checkout, multi-branch inventory, CRM, purchase orders, analytics & real-time alerts.
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-View_App-6366F1?style=for-the-badge&logo=googlecloud&logoColor=white)](https://envault-sandbox-507307610839.europe-west2.run.app)
-[![GitHub](https://img.shields.io/badge/GitHub-envault--sandbox-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Vera93203/envault-sandbox)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-View_App-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://pos-inventory-app-bm8u.onrender.com/)
+[![GitHub](https://img.shields.io/badge/GitHub-POS--Inventory-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/mkkbun/POS-Inventory-Management-System)
 [![Node.js](https://img.shields.io/badge/Node.js-20%2B-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -13,15 +13,15 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![License](https://img.shields.io/badge/License-Apache--2.0-blue?style=flat-square)](LICENSE)
 
-**[Try the live app →](https://envault-sandbox-507307610839.europe-west2.run.app)** &nbsp;·&nbsp; [Features](#features) &nbsp;·&nbsp; [Quick Start](#quick-start) &nbsp;·&nbsp; [Demo Accounts](#demo-accounts) &nbsp;·&nbsp; [API Reference](#api-reference)
+**[Try the live app →](https://pos-inventory-app-bm8u.onrender.com/)** &nbsp;·&nbsp; [Features](#features) &nbsp;·&nbsp; [Quick Start](#quick-start) &nbsp;·&nbsp; [Demo Accounts](#demo-accounts) &nbsp;·&nbsp; [API Reference](#api-reference)
 
 <br/>
 
-<a href="https://envault-sandbox-507307610839.europe-west2.run.app">
-  <img src="docs/images/dashboard-preview.png" alt="ApexPOS Pro Dashboard — live retail command hub with sales KPIs, top sellers, stock alerts, and recent transactions" width="100%" />
+<a href="https://pos-inventory-app-bm8u.onrender.com/">
+  <img src="docs/images/dashboard-preview.png" alt="ApexPOS Pro Dashboard — Retail Command Hub with sales KPIs, top sellers, stock alerts, and recent transactions" width="100%" />
 </a>
 
-<sub>Click the screenshot to open the live deployment on Google Cloud Run</sub>
+<sub>Click the screenshot to open the live app on Render</sub>
 
 </div>
 
@@ -31,8 +31,9 @@
 
 | | |
 |---|---|
-| **App URL** | [https://envault-sandbox-507307610839.europe-west2.run.app](https://envault-sandbox-507307610839.europe-west2.run.app) |
-| **Hosted on** | Google Cloud Run (Europe West 2) |
+| **App URL** | [https://pos-inventory-app-bm8u.onrender.com/](https://pos-inventory-app-bm8u.onrender.com/) |
+| **Repository** | [github.com/mkkbun/POS-Inventory-Management-System](https://github.com/mkkbun/POS-Inventory-Management-System) |
+| **Hosted on** | [Render](https://render.com/) |
 | **Stack** | React 19 · Express · TypeScript · Tailwind CSS |
 | **Login** | Use demo accounts below — one-click prefill on the login screen |
 
@@ -121,7 +122,7 @@ The app ships with realistic seed data across **3 branches**, **6 products**, sa
 | **Real-time** | Server-Sent Events (SSE) |
 | **AI (optional)** | Google Gemini API (`@google/genai`) |
 | **Build** | Vite 6, esbuild, tsx |
-| **Deployment** | Google Cloud Run |
+| **Deployment** | [Render](https://render.com/) |
 | **Data (current)** | JSON file store (`data/db.json`) with in-memory caching |
 | **Data (planned)** | PostgreSQL via Prisma (`prisma/schema.prisma` included) |
 
@@ -136,8 +137,8 @@ The app ships with realistic seed data across **3 branches**, **6 products**, sa
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/Vera93203/envault-sandbox.git
-cd envault-sandbox
+git clone https://github.com/mkkbun/POS-Inventory-Management-System.git
+cd POS-Inventory-Management-System
 ```
 
 ### 2. Install dependencies
@@ -204,7 +205,7 @@ flowchart TB
         AI[Gemini Insights]
     end
 
-    subgraph Deploy["Google Cloud Run"]
+    subgraph Deploy["Render"]
         App[Unified Node.js Server]
     end
 
@@ -274,7 +275,7 @@ All protected routes require `Authorization: Bearer <token>`.
 ## Project Structure
 
 ```
-envault-sandbox/
+POS-Inventory-Management-System/
 ├── docs/images/
 │   └── dashboard-preview.png   # README showcase screenshot
 ├── src/
@@ -310,7 +311,7 @@ envault-sandbox/
 - [x] JWT auth with role-based access control
 - [x] Real-time SSE notifications
 - [x] Financial reporting dashboard
-- [x] Google Cloud Run deployment
+- [x] Render cloud deployment
 - [ ] PostgreSQL migration (Prisma schema ready)
 - [ ] Password hashing (bcrypt / argon2)
 - [ ] Receipt printing & barcode scanner support
@@ -336,8 +337,8 @@ Licensed under the **Apache License 2.0** — see [LICENSE](LICENSE).
 
 <div align="center">
 
-**[View Live Demo](https://envault-sandbox-507307610839.europe-west2.run.app)** &nbsp;·&nbsp; **[GitHub Repository](https://github.com/Vera93203/envault-sandbox)**
+**[View Live Demo](https://pos-inventory-app-bm8u.onrender.com/)** &nbsp;·&nbsp; **[GitHub Repository](https://github.com/mkkbun/POS-Inventory-Management-System)**
 
-Built for modern retail operations · Deployed on Google Cloud Run
+Built for modern retail operations · Deployed on Render
 
 </div>
